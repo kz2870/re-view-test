@@ -1,0 +1,7 @@
+{
+    "name": "Uzeltok Dev",
+    "image": "ghcr.io/vvakame/review:5.9",
+    "features": {
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    }
+}
