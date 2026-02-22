@@ -1,1 +1,70 @@
 % for user-defined macro
+\RequirePackage{tikz,tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% ============================================================
+% \articlecard{タイトル}{タグ}{番号}{著者ID}
+% 記事カード風ブロック: 二重枠線の中に
+%   上段: タイトル + タグ（右寄せに大きな番号）
+%   水平線
+%   下段: @著者ID
+% ============================================================
+\usetikzlibrary{shadows}
+
+% 章見出しの表示を抑制（TOCには残る）
+\makeatletter
+\renewcommand{\@makechapterhead}[1]{%
+  \vspace*{-2\Cvs}% 元の余白を打ち消す
+  \vspace{-3\Cvs}% 後アキも打ち消す
+}
+
+% //lead (quotation) の左マージンを除去
+\renewenvironment{quotation}{%
+  \list{}{\listparindent\parindent
+    \itemindent\listparindent
+    \leftmargin\z@
+    \rightmargin\z@}%
+  \item\relax}{\endlist}
+\makeatother
+
+\newcommand{\articlecard}[4]{%
+  \par\vspace{1\baselineskip}%
+  \noindent
+  \hspace*{-\dimexpr\oddsidemargin+1in\relax}%
+  \begin{tikzpicture}[baseline=(card.center)]
+    % カードサイズ（用紙幅いっぱい）
+    \def\cardwidth{\paperwidth}%
+    \def\cardheight{2.4cm}%
+    %
+    % 一重枠 + 薄い影
+    \node[
+      draw=black, line width=0.4pt,
+      fill=white,
+      minimum width=\cardwidth,
+      minimum height=\cardheight,
+      inner sep=4pt,
+      drop shadow={shadow xshift=1pt, shadow yshift=-1pt, opacity=0.3, fill=black},
+    ] (card) {};
+    %
+    % --- 上段: タイトル + タグ ---
+    \node[anchor=south west, inner sep=0pt]
+      at ([xshift=16pt, yshift=1pt]card.west)
+      {\sffamily\gtfamily\Large\textbf{#1}~{\small #2}};
+    %
+    % --- 番号（右端・中抜きゴシック体） ---
+    \node[anchor=east, inner sep=4pt]
+      at ([xshift=-8pt]card.east)
+      {\fontsize{36pt}{36pt}\selectfont\sffamily\gtfamily\bfseries
+       \makebox[40pt]{\special{pdf:literal 2 Tr 0.8 w 1 g 0 G}#3\special{pdf:literal 0 Tr 0 w 0 g}}};
+    %
+    % --- 水平線（左右にマージン） ---
+    \draw[black, line width=0.4pt]
+      ([xshift=12pt, yshift=-2pt]card.west) -- ([xshift=-56pt, yshift=-2pt]card.east);
+    %
+    % --- 下段: 著者ID ---
+    \node[anchor=north west, inner sep=0pt]
+      at ([xshift=16pt, yshift=-5pt]card.west)
+      {\sffamily\gtfamily\large #4};
+  \end{tikzpicture}%
+  \par\vspace{1\baselineskip}%
+}
